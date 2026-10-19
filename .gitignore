@@ -1,0 +1,21 @@
+# Entorno virtual de Python
+.venv/
+venv/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Editores
+.vscode/
+.idea/
+~$*
+*.tmp
+
+# Locks de LibreOffice
+.~lock.*#

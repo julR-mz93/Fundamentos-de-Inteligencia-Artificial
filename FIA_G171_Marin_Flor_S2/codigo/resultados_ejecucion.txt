@@ -1,0 +1,117 @@
+==============================================================================
+ACTIVIDADES 2.1 y 2.2 — PROBLEMAS Y ESPACIOS DE BÚSQUEDA
+==============================================================================
+Modelado + generación de estados + grafos con NetworkX + búsqueda.
+Generador de estados: generador_estados.py | Grafos: construir_grafos.py | Algoritmos: busqueda.py
+==============================================================================
+PROBLEMA 1 — RUTEO DE UNA AMBULANCIA EN RED URBANA DE SENTIDOS ÚNICOS
+==============================================================================
+
+--- Modelo del problema 1 ---------------------------------------------------
+  Estados (S)             : las 12 intersecciones de la red urbana (A…L)
+  Estado inicial (s0)     : 'A' = Cuartel
+  Acciones (A)            : circular por una calle adyacente respetando el sentido único (una acción por arista saliente)
+  Función de transición   : aplicar una acción mueve la ambulancia a la intersección destino
+  Coste                   : minutos de traslado por la calle en hora pico (peso de la arista)
+  Meta                    : 'L' = Hospital General
+  Espacio de estados      : grafo DIRIGIDO (sentidos únicos) y PONDERADO (minutos); el grafo físico y el de estados coinciden
+  Propiedad               : costes no negativos → aplicable Dijkstra y A*
+
+--- Generación de estados ---------------------------------------------------
+  Estados generados (BFS desde el estado inicial): 12
+  Transiciones (acciones con coste)             : 18
+  Niveles del árbol de generación               : 6
+  Sucesores del estado inicial:
+     A --[Tomar Av. Central hacia B; 3 min]--> B
+
+--- Grafo del espacio de estados (NetworkX) ---------------------------------
+  Tipo: DiGraph (grafo dirigido ponderado)
+  Nodos (estados) : 12
+  Aristas (transiciones): 18
+  ¿Dirigido? True | ¿Ponderado? True
+  Ejemplos de aristas (origen → destino): minutos — calle
+     A → B:  3 min — Av. Central
+     B → C:  5 min — Av. Central
+     C → D:  4 min — Av. Central
+     H → G:  3 min — Calle Morelos
+     G → F:  4 min — Calle Morelos
+     F → E:  2 min — Calle Morelos
+
+--- Resultados de búsqueda (cuartel A → hospital L) -------------------------
+  BFS (amplitud)             coste =    21 min | aristas =  5 | expandidos = 12 | descubiertos =  12
+                             ruta: A → B → C → D → H → L
+  Dijkstra                   coste =    16 min | aristas =  5 | expandidos = 10 | descubiertos =  12
+                             ruta: A → B → F → J → K → L
+  A*                         coste =    16 min | aristas =  5 | expandidos =  9 | descubiertos =  12
+                             ruta: A → B → F → J → K → L
+
+  Análisis:
+    • BFS encuentra 21 min con 5 calles (mínimo número de aristas, IGNORA el coste).
+    • Dijkstra y A* encuentran 16 min (óptimo): minimizan el tiempo real de traslado.
+    • A* expandió 9 estados frente a 10 de Dijkstra, con la misma solución (la heurística admisible guía la búsqueda).
+    • Conclusión: en grafos ponderados, minimizar aristas no garantiza minimizar el coste.
+
+--- Figuras generadas -------------------------------------------------------
+==============================================================================
+PROBLEMA 2 — RUTA DE UN DRON DE REPARTO CON VÁRIAS ENTREGAS (TSP)
+==============================================================================
+
+--- Modelo del problema 2 ---------------------------------------------------
+  Estados (S)             : (nodo_actual, conjunto_de_entregas_realizadas), p. ej. (P1, {P1, P2})
+  Estado inicial (s0)     : (BASE, ∅) = el dron en la base sin entregar
+  Acciones (A)            : volar a un punto de entrega aún no visitado; cuando ya se entregó todo, regresar a la BASE
+  Función de transición   : la acción añade el punto al conjunto y mueve el dron
+  Coste                   : minutos de vuelo del tramo (peso de la arista)
+  Meta                    : (BASE, {P1, P2, P3, P4}) = de vuelta con todas las entregas
+  Espacio de estados      : grafo DIRIGIDO y PONDERADO generado por el generador de estados (los tiempos no son simétricos)
+  Restricción             : no se vuelve a la base hasta completar las entregas (autonomía del dron)
+
+--- Generación de estados ---------------------------------------------------
+  Estados generados (BFS desde (BASE, ∅)) : 34
+  Transiciones (acciones con coste)       : 56
+  Niveles del árbol de generación         : 6
+  Sucesores del estado inicial:
+     ('BASE', frozenset()) --[Volar a Farmacia (P1); 4 min]--> ('P1', frozenset({'P1'}))
+     ('BASE', frozenset()) --[Volar a Clínica (P2); 6 min]--> ('P2', frozenset({'P2'}))
+     ('BASE', frozenset()) --[Volar a Mercado (P3); 7 min]--> ('P3', frozenset({'P3'}))
+     ('BASE', frozenset()) --[Volar a Escuela (P4); 5 min]--> ('P4', frozenset({'P4'}))
+
+--- Grafos del problema 2 (NetworkX) ----------------------------------------
+  Red física : DiGraph | 5 nodos | 20 aristas dirigidas (tiempos asimétricos)
+  Ejemplo de asimetría: P2→P3 = 8 min, P3→P2 = 6 min
+  Espacio de estados: DiGraph | 34 estados | 56 transiciones
+  ¿Dirigido? True | ¿Ponderado? True
+
+--- Resultados de búsqueda ((BASE, ∅) → (BASE, todas las entregas)) ---------
+  BFS (amplitud)             coste =    26 min | aristas =  5 | expandidos = 34 | descubiertos =  34
+                             ruta: ('BASE', frozenset()) → ('P1', frozenset({'P1'})) → ('P2', frozenset({'P1', 'P2'})) → ('P3', frozenset({'P3', 'P1', 'P2'})) → ('P4', frozenset({'P4', 'P3', 'P1', 'P2'})) → ('BASE', frozenset({'P4', 'P3', 'P1', 'P2'}))
+     orden de entrega: BASE → P1 → P2 → P3 → P4 → BASE
+  Dijkstra                   coste =    22 min | aristas =  5 | expandidos = 34 | descubiertos =  34
+                             ruta: ('BASE', frozenset()) → ('P3', frozenset({'P3'})) → ('P4', frozenset({'P4', 'P3'})) → ('P1', frozenset({'P4', 'P3', 'P1'})) → ('P2', frozenset({'P4', 'P3', 'P1', 'P2'})) → ('BASE', frozenset({'P4', 'P3', 'P1', 'P2'}))
+     orden de entrega: BASE → P3 → P4 → P1 → P2 → BASE
+
+--- Verificación de optimalidad (fuerza bruta, 4! = 24 ordenes) -------------
+  Mejor orden por enumeración exhaustiva: BASE → P3 → P4 → P1 → P2 → BASE | 22 min
+  Coste de Dijkstra                     : 22 min
+  ¿Coinciden? SÍ — solución óptima verificada
+
+  Análisis:
+    • BFS entrega una ruta de 26 min: elige el camino con menos acciones, sin mirar los minutos de vuelo.
+    • Dijkstra entrega la ruta óptima de 22 min (4 min menos que BFS).
+    • El espacio de estados es EXPLÍCITO (34 estados generados): a diferencia del problema 1, el grafo físico y el de estados NO coinciden.
+
+--- Figuras generadas -------------------------------------------------------
+
+--- Resumen comparativo -----------------------------------------------------
+  Problema                     estados   transiciones   dirigido   ponderado
+  1. Ruteo de ambulancia            12             18         sí          sí
+  2. Reparto del dron               34             56         sí          sí
+
+--- Archivos generados ------------------------------------------------------
+  ../figuras/problema1_arbol_estados.png
+  ../figuras/problema1_red_calles.png
+  ../figuras/problema1_solucion_comparada.png
+  ../figuras/problema2_espacio_estados.png
+  ../figuras/problema2_red_fisica.png
+  ../figuras/problema2_solucion_optima.png
+  ../resultados_ejecucion.txt

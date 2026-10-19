@@ -1,0 +1,4 @@
+# Dependencias — Actividades 2.1 y 2.2 (Problemas y espacios de búsqueda)
+# Instalar con:  pip install -r requirements.txt
+networkx>=3.4
+matplotlib>=3.8
