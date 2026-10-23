@@ -1,0 +1,28 @@
+================================================================
+ACTIVIDAD 2.3 — BÚSQUEDA LOCAL
+================================================================
+
+Problema: TSP con 20 paradas + almacén
+Función objetivo: longitud_ruta(ruta) a minimizar
+Vecindad: intercambio (swap) + inversión (2-opt)
+
+Parámetros:
+  Hill Climbing: max_iter=10000, sin_mejora=150, estrategia=mejor_vecino
+  SA: T0=12.0, Tf=0.001, alpha=0.995, iter_por_T=80
+
+Ruta inicial aleatoria: 110.079
+Ruta inicial vecino más próximo: 46.978
+
+Misma ruta inicial:
+  Hill Climbing:        43.837 (eval=61180)
+  Simulated Annealing:  42.883 (eval=149920)
+
+Vecino más próximo:
+  Hill Climbing:        42.883
+  Simulated Annealing:  42.883
+
+30 ejecuciones (rutas aleatorias):
+  HC   -> min=42.883 media=44.613 mediana=44.209 σ=1.148 max=47.181
+  SA   -> min=42.883 media=43.058 mediana=42.883 σ=0.275 max=43.531
+
+Mejor absoluto: 42.883
