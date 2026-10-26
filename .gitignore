@@ -19,3 +19,6 @@ Thumbs.db
 
 # Locks de LibreOffice
 .~lock.*#
+
+# Documento editable de la Actividad 2.4 (solo se publica el PDF)
+FIA_G171_Marin_Flor_S4/*.docx
