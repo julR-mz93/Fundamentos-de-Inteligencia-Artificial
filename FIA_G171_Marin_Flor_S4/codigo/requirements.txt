@@ -1,0 +1,3 @@
+# Actividad 2.4 — Búsqueda ciega (BFS y DFS)
+# Este proyecto NO requiere dependencias externas.
+# Solamente se utiliza la biblioteca estándar de Python (3.10 o superior).
